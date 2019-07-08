@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿// Author: Billy Mitchell
+// This is a Model which is intended to represent the primary properties for each training program.
+
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace BangazonAPI.Models
+namespace BangazonWorkforce.Models
 {
     public class TrainingProgram
     {
