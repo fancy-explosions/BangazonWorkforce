@@ -4,12 +4,12 @@ GO
 IF NOT EXISTS (
     SELECT [name]
     FROM sys.databases
-    WHERE [name] = N'BangazonAPI'
+    WHERE [name] = N'BangazonWorkforce'
 )
-CREATE DATABASE BangazonAPI
+CREATE DATABASE BangazonWorkforce
 GO
 
-USE BangazonAPI
+USE BangazonWorkforce
 GO
 
 
