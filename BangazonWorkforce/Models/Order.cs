@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BangazonAPI.Models
+namespace BangazonWorkforce.Models
 {
     // The purpose of the order class is to be a Model which represents the order table in the BangazonAPI Database 
     public class Order

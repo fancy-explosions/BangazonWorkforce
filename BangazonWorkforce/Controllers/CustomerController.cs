@@ -9,7 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using BangazonAPI.Models;
+using BangazonWorkforce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +24,7 @@ using Microsoft.Extensions.Configuration;
 
 //If /customers? q = mic is requested, then any customer whose first name is Michelle, or Michael, or Domicio should be returned.Any customer whose last name is Michaelangelo, or Omici, Dibromic should be returned. Every property of the customer object should be checked for a match.
 
-namespace BangazonAPI.Controllers
+namespace BangazonWorkforce.Controllers
 {
     // The route is setup to be the controller name which is Customer, the route for these functions is api/Customer
 

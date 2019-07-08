@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using BangazonAPI.Models;
+using BangazonWorkforce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-namespace BangazonAPI.Controllers
+
+namespace BangazonWorkforce.Controllers
 {
     //Setting connection route for api/Computer
     [Route("api/[controller]")]
