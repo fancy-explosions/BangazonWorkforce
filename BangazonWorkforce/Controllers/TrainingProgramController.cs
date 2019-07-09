@@ -27,7 +27,7 @@ namespace BangazonWorkforce.Controllers
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-        // GET: This returns all Training Programs havt have not been completed yet
+        // GET: This returns all Training Programs which have not been completed yet
         public ActionResult Index()
         {
             using (SqlConnection conn = Connection)
