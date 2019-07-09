@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BangazonWorkforce.Models
 {
@@ -11,10 +8,11 @@ namespace BangazonWorkforce.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Department")]
         public string Name { get; set; }
 
         [Required]
         public int Budget { get; set; }
-        public Employee Employee { get; set; } = new Employee();
+        public List<Employee> EmployeesInDepartment { get; set; } = new List<Employee>();
     }
 }
