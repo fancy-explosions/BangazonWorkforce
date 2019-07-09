@@ -9,7 +9,6 @@ using BangazonWorkforce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-
 namespace BangazonWorkforce.Controllers
 {
     //Setting connection route for api/Computer
