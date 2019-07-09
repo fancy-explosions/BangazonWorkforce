@@ -30,7 +30,50 @@ namespace BangazonWorkforce.Controllers
         // GET: Employee
         public ActionResult Index()
         {
-            return View();
+            using(SqlConnection conn = Connection)
+            {
+                //open the connection
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    //SQL Command
+                    cmd.CommandText = @"SELECT e.Id,
+                                               e.FirstName,
+                                               e.LastName,
+                                               e.IsSuperVisor,
+                                               e.DepartmentId,
+                                               de.Id,
+                                               de.Name,
+                                               de.Budget
+                                        FROM Employee e
+                                        LEFT JOIN Department de ON e.DepartmentId = de.Id;";
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Employee> employees = new List<Employee>();
+
+                    while (reader.Read())
+                    {
+                        Employee emp = new Employee
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            IsSuperVisor = reader.GetBoolean(reader.GetOrdinal("IsSuperVisor")),
+                            department = new Department()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Budget = reader.GetInt32(reader.GetOrdinal("Budget"))
+                            }
+                        };
+                        employees.Add(emp);
+                    }
+                    reader.Close();
+
+                    return View(employees);
+                }
+            }
         }
 
         // GET: Employee/Details/5
