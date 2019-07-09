@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BangazonWorkforce.Models
 {
@@ -24,9 +20,10 @@ namespace BangazonWorkforce.Models
 
         //[Required]
         [Display(Name = "Is A Supervisor")]
+
         public bool IsSuperVisor { get; set; }
         //[Required]
         [Display(Name = "Department Name")]
-        public Department department { get; set; } = new Department();
+        public Department department { get; set; }
     }
 }
