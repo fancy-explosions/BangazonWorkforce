@@ -11,15 +11,19 @@ namespace BangazonWorkforce.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "First")]
         public string FirstName { get; set; }
 
+
         [Required]
+        [Display(Name = "Last")]
         public string LastName { get; set; }
 
         [Required]
         public int DepartmentId { get; set; }
 
         [Required]
+        [Display(Name = "Supervisor")]
         public bool IsSuperVisor { get; set; }
         [Required]
         public Department department { get; set; } = new Department();
