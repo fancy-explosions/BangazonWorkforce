@@ -10,18 +10,23 @@ namespace BangazonWorkforce.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
-        [Required]
+        //[Required]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Required]
+        //[Required]
+        [Display(Name = "Department ID")]
         public int DepartmentId { get; set; }
 
-        [Required]
+        //[Required]
+        [Display(Name = "Is A Supervisor")]
         public bool IsSuperVisor { get; set; }
-        [Required]
+        //[Required]
+        [Display(Name = "Department Name")]
         public Department department { get; set; } = new Department();
     }
 }
