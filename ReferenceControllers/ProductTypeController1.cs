@@ -1,27 +1,28 @@
-﻿//AUTHOR: CLIFTON MATUSZEWSKI
-
+﻿// Author: Billy Mitchell
+// The purpose fo the ProductType controller is to define the methods to be used for accessing the orders table in the BangazonAPI database GET PUT POST and DELETE 
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using BangazonAPI.Models;
+using BangazonWorkforce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-namespace BangazonAPI.Controllers
-{
-    //Setting connection route for api/Computer
+
+namespace BangazonWorkforce.Controllers
+{   // Setting the default route, api/producttype, 
     [Route("api/[controller]")]
     [ApiController]
-    public class ComputerController : ControllerBase
+    public class ProductTypeController : ControllerBase
     {
         private readonly IConfiguration _config;
 
-        public ComputerController(IConfiguration config)
+        public ProductTypeController(IConfiguration config)
         {
             _config = config;
         }
+        // Getting and setting the connection property through the DefaultConnection in appsettings.json which connects this file to the database
         public SqlConnection Connection
         {
             get
@@ -29,11 +30,12 @@ namespace BangazonAPI.Controllers
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-        // Get api/Computer Getting all computers from database
+
+        // GET All Product Type Entries
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            string sql = "SELECT Id, PurchaseDate, DecomissionDate, Make, Manufacturer FROM Computer";
+            string sql = "SELECT Id, Name FROM ProductType";
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
@@ -41,37 +43,32 @@ namespace BangazonAPI.Controllers
                 {
                     cmd.CommandText = sql;
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
-                    List<Computer> computers = new List<Computer>();
+                    List<ProductType> productTypes = new List<ProductType>();
 
                     while (reader.Read())
                     {
-                        Computer computer = new Computer()
+                        ProductType productType = new ProductType()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate")),
-                            Make = reader.GetString(reader.GetOrdinal("Make")),
-                            Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                            Name = reader.GetString(reader.GetOrdinal("Name"))                            
                         };
-                        computers.Add(computer);
+                        productTypes.Add(productType);
                     }
                     reader.Close();
-                    return Ok(computers);
+                    return Ok(productTypes);
                 }
             }
-
         }
-        // GET: api/Computer/5 Getting one computer by Id from database
 
-        [HttpGet("{id}")]
-        //[HttpGet("{id}", Name = "Get")]
+        // GET One Product Type Entry
+        [HttpGet("{id}", Name = "GetProductType")]        
         public async Task<IActionResult> Get(int id)
         {
-            if (!ComputerExists(id))
+            if (!ProductTypeExists(id))
             {
                 return new StatusCodeResult(StatusCodes.Status404NotFound);
             }
-            string sql = "SELECT Id, PurchaseDate, DecomissionDate, Make, Manufacturer FROM Computer WHERE Id = @id";
+            string sql = "SELECT Id, Name FROM ProductType WHERE Id = @id";
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
@@ -80,28 +77,26 @@ namespace BangazonAPI.Controllers
                     cmd.CommandText = sql;
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
-                    Computer computer = null;
+                    ProductType productType = null;
 
                     if (reader.Read())
                     {
-                        computer = new Computer()
+                        productType = new ProductType()
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate")),
-                            Make = reader.GetString(reader.GetOrdinal("Make")),
-                            Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),                            
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
                         };
                     }
                     reader.Close();
-                    return Ok(computer);
+
+                    return Ok(productType);
                 }
             }
         }
 
-        //Post api/computer Posting new computer to the database
+        // POST One Product Type Entry
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Computer computer)
+        public async Task<IActionResult> Post([FromBody] ProductType productType)
         {
             using (SqlConnection conn = Connection)
             {
@@ -109,28 +104,21 @@ namespace BangazonAPI.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        INSERT INTO Computer (PurchaseDate, 
-                                                DecomissionDate,
-                                                Make, 
-                                                Manufacturer)
-                                                 OUTPUT INSERTED.Id
-                                                VALUES(@PurchaseDate, @DecomissionDate, @Make, @Manufacturer)";
-                    cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
-                    cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
-                    cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
-                    cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
-                    
+                        INSERT INTO ProductType (Name)
+                        OUTPUT INSERTED.Id
+                        VALUES (@name)";
+                    cmd.Parameters.Add(new SqlParameter("@name", productType.Name));
 
-                    computer.Id = (int)await cmd.ExecuteScalarAsync();
-
-                    return CreatedAtAction("Get", new { id = computer.Id }, computer);
+                    int NewId = (int)await cmd.ExecuteScalarAsync();
+                    productType.Id = NewId;
+                    return CreatedAtRoute("GetProductType", new { id = NewId }, productType);
                 }
             }
         }
 
-        //PUT api/computer/5 Editing computer from database using Computer Id to target
+        // PUT (update) One Product Type Entry
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Computer computer)
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] ProductType productType)
         {
             try
             {
@@ -139,17 +127,11 @@ namespace BangazonAPI.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = @"UPDATE Computer
-                                          SET PurchaseDate = @PurchaseDate,
-                                              DecomissionDate = @DecomissionDate,
-                                              Make = @Make,
-                                              Manufacturer = @Manufacturer
-                                                WHERE Id = @id";
+                        cmd.CommandText = @"UPDATE ProductType
+                                            SET Name = @name                          
+                                            WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@name", productType.Name));
                         cmd.Parameters.Add(new SqlParameter("@id", id));
-                        cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
-                        cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
-                        cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
-                        cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
@@ -162,7 +144,7 @@ namespace BangazonAPI.Controllers
             }
             catch (Exception)
             {
-                if (!ComputerExists(id))
+                if (!ProductTypeExists(id))
                 {
                     return NotFound();
                 }
@@ -172,9 +154,9 @@ namespace BangazonAPI.Controllers
                 }
             }
         }
-        //DELETE api/Computer/1 Delete Computer from databased using Id as target value
+        // DELETE One Product Type Entry
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             try
             {
@@ -183,7 +165,7 @@ namespace BangazonAPI.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = @"DELETE FROM Computer WHERE Id = @id";
+                        cmd.CommandText = @"DELETE FROM ProductType WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -197,7 +179,7 @@ namespace BangazonAPI.Controllers
             }
             catch (Exception)
             {
-                if (!ComputerExists(id))
+                if (!ProductTypeExists(id))
                 {
                     return NotFound();
                 }
@@ -207,15 +189,15 @@ namespace BangazonAPI.Controllers
                 }
             }
         }
-        //Method to see if Product with certain Id exists
-        private bool ComputerExists(int id)
+        //This method is used within the get by id, put, and delete methods to make sure the object exists.
+        private bool ProductTypeExists(int id)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id From Computer where Id = @id";
+                    cmd.CommandText = @"SELECT Id FROM ProductType WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
 
                     SqlDataReader reader = cmd.ExecuteReader();

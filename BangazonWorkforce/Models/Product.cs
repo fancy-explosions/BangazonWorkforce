@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace BangazonAPI.Models
+namespace BangazonWorkforce.Models
 {
     public class Product
     {

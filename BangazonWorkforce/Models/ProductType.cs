@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BangazonAPI.Models    
+namespace BangazonWorkforce.Models    
 {
     // The purpose of the ProductType class is to be a Model which represents the ProductType table in the BangazonAPI Database 
     public class ProductType
