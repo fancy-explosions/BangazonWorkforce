@@ -42,9 +42,12 @@ namespace BangazonWorkforce.Models.ViewModels
                                             e.FirstName,
                                             e.LastName,
                                             e.DepartmentId,
-                                            e.IsSuperVisor
+                                            e.IsSuperVisor,
+                                            d.Id,
+                                            d.Name
                                             FROM Employee e
                                             JOIN EmployeeTraining et ON et.EmployeeId = e.Id
+                                            JOIN Department d ON e.DepartmentId = d.Id
                                             WHERE et.TrainingProgramId = @Id";
 
                     cmd.Parameters.Add(new SqlParameter("@id", id));
@@ -61,7 +64,12 @@ namespace BangazonWorkforce.Models.ViewModels
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                             DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId")),
-                            IsSuperVisor = reader.GetBoolean(reader.GetOrdinal("IsSuperVisor"))
+                            IsSuperVisor = reader.GetBoolean(reader.GetOrdinal("IsSuperVisor")),
+                            department = new Department()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name"))
+                            }
                         };
                         employees.Add(employee);
                     }

@@ -43,39 +43,37 @@
     </dl>
 </div>
 
-<h4>Employees in Training Program</h4>
-<hr />
-<dl class="row">
+<div>
+    <h4>Employees in Training Program</h4>
+    <hr />
+    <dl class="row">
 
-    @foreach (var employee in Model.Employees)
-    {
+        @foreach (var employee in Model.Employees)
+        {
+            <dt class="col-sm-2">
+                Name
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => employee.FirstName)
+                @Html.DisplayFor(model => employee.LastName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => employee.department.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => employee.department.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => employee.IsSuperVisor)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => employee.IsSuperVisor)
+            <hr />
+            </dd>
+        }
 
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => employee.FirstName)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => employee.FirstName)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => employee.LastName)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => employee.LastName)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => employee.DepartmentId)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => employee.DepartmentId)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => employee.IsSuperVisor)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => employee.IsSuperVisor)
-    </dd>
-    }
-</dl>
+    </dl>  
+    <hr />
 </div>
 
 <div>
