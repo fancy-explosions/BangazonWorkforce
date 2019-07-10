@@ -127,7 +127,7 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        // GET: TrainingProgram/Edit/5
+        // GET: TrainingProgram/Edit/5 This fetches the selected training program information to be placed in the edit fields when the user has selected the training program to be edited
         public ActionResult Edit(int id)
         {
             TrainingProgram trainingProgram = GetTrainingProgramById(id);
@@ -137,19 +137,38 @@ namespace BangazonWorkforce.Controllers
         // POST: TrainingProgram/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, TrainingProgram trainingProgram)
         {
             try
-            {
-                // TODO: Add update logic here
+            { 
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE TrainingProgram
+                                                SET Name=@Name,
+                                                    StartDate=@StartDate,
+                                                    EndDate=@EndDate,
+                                                    MaxAttendees=@MaxAttendees
+                                                WHERE Id=@Id";
+                        cmd.Parameters.Add(new SqlParameter("@Id", id));
+                        cmd.Parameters.Add(new SqlParameter("@Name", trainingProgram.Name));
+                        cmd.Parameters.Add(new SqlParameter("@StartDate", trainingProgram.StartDate));
+                        cmd.Parameters.Add(new SqlParameter("@EndDate", trainingProgram.EndDate));
+                        cmd.Parameters.Add(new SqlParameter("@MaxAttendees", trainingProgram.MaxAttendees));
 
-                return RedirectToAction(nameof(Index));
+
+                        cmd.ExecuteNonQuery();
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+                }
+                catch
+                {
+                    return View();
+                }
             }
-            catch
-            {
-                return View();
-            }
-        }
 
         // GET: TrainingProgram/Delete/5
         public ActionResult Delete(int id)
