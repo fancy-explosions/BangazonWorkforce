@@ -54,7 +54,7 @@ namespace BangazonWorkforce.Controllers
                         };
 
                         //Since DateTime is a non-nullable data type IsDBNull is required to query the DecomissionDate
-                        if(!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
                             computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
                         }
@@ -137,7 +137,8 @@ namespace BangazonWorkforce.Controllers
         // GET: Computer/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            Computer computer = GetComputerByID(id);
+            return View(computer);
         }
 
         // POST: Computer/Delete/5
@@ -147,9 +148,22 @@ namespace BangazonWorkforce.Controllers
         {
             try
             {
-                // TODO: Add delete logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        
+                        cmd.CommandText = @"DELETE FROM Computer WHERE Id = @Id
+                                          ";
 
-                return RedirectToAction(nameof(Index));
+                        cmd.Parameters.Add(new SqlParameter("@Id", id));
+                        cmd.ExecuteNonQuery();
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
             }
             catch
             {
@@ -186,12 +200,49 @@ namespace BangazonWorkforce.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("id")),
                             Make = reader.GetString(reader.GetOrdinal("Make")),
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"))
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate"))
                         };
+
+                        //Since DateTime is a non-nullable data type IsDBNull is required to query the DecomissionDate
+                        if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        {
+                            computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                        }
                     }
                     reader.Close();
                     return computer;
+                }
+            }
+        }
+        private ComputerEmployee IsAssigned(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT c.Id,
+                                              ce.ComputerId,
+                                          FROM Computer c
+                                          JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                         WHERE c.Id = @id
+                                      ";
+
+                    //Use the id as a parameter to get details about a specific computer.
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    ComputerEmployee computerEmployee = null;
+                    if (reader.Read())
+                    {
+                        computerEmployee = new ComputerEmployee
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("id")),
+                            ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId"))
+                        };
+                    }
+                    reader.Close();
+                    return computerEmployee;
                 }
             }
         }
