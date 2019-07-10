@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 using BangazonWorkforce.Models;
 using BangazonWorkforce.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
