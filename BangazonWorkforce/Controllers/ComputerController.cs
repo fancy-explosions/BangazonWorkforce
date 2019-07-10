@@ -52,6 +52,7 @@ namespace BangazonWorkforce.Controllers
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                             PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate"))
                         };
+                        //IsDBNull is required to query null values from the SQL Database.
                         if(!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
                             computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
@@ -67,6 +68,7 @@ namespace BangazonWorkforce.Controllers
         // GET: Computer/Details/5
         public ActionResult Details(int id)
         {
+            //See GetComputerByID code at the bottom
             Computer computer = GetComputerByID(id);
             return View(computer);
         }
@@ -154,6 +156,7 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        //Define GetComputerByID here so that it can be reused to keep the code DRY.
         private Computer GetComputerByID(int id)
         {
             using (SqlConnection conn = Connection)
@@ -169,6 +172,7 @@ namespace BangazonWorkforce.Controllers
                                           FROM Computer
                                          WHERE Id = @id
                                       ";
+                    //Use the id as a parameter to get details about a specific computer.
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
