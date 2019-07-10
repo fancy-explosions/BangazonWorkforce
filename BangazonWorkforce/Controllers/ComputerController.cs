@@ -50,9 +50,12 @@ namespace BangazonWorkforce.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Make = reader.GetString(reader.GetOrdinal("Make")),
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"))
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate"))
                         };
+                        if(!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        {
+                            computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                        }
                         computers.Add(computer);
                     }
                     reader.Close();
