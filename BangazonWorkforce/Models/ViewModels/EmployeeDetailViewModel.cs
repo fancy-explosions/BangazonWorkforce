@@ -48,7 +48,7 @@ namespace BangazonWorkforce.Models.ViewModels
                                             tp.Name,
                                             tp.StartDate,
                                             tp.EndDate,
-                                            tp.MaxAttendees,
+                                            tp.MaxAttendees
                                         FROM TrainingProgram tp
                                         JOIN EmployeeTraining et ON et.TrainingProgramId = tp.Id
                                         JOIN Employee e ON e.Id = et.EmployeeId
@@ -91,8 +91,8 @@ namespace BangazonWorkforce.Models.ViewModels
                                                c.Make,
                                                c.Manufacturer
                                         FROM Computer c
-                                        JOIN EmployeeComputer ec ON ec.ComputerId = c.Id
-                                        JOIN Employee e ON e.Id = ec.EmployeeId
+                                        JOIN ComputerEmployee ce ON ce.ComputerId = c.Id
+                                        JOIN Employee e ON e.Id = ce.EmployeeId
                                         WHERE e.Id = @id";
 
                     cmd.Parameters.Add(new SqlParameter("@id", id));
