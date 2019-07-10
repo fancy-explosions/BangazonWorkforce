@@ -1,10 +1,13 @@
-﻿@model IEnumerable<BangazonWorkforce.Models.TrainingProgram>
+﻿@* Author: Billy Mitchell
+   This view is to deisplay a list of all Compnay Training Programs that have not been completed
+*@
+@model IEnumerable<BangazonWorkforce.Models.TrainingProgram>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>List of Company Training Programs</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
@@ -49,9 +52,9 @@
                 @Html.DisplayFor(modelItem => item.MaxAttendees)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
             </td>
         </tr>
 }
