@@ -214,37 +214,37 @@ namespace BangazonWorkforce.Controllers
                 }
             }
         }
-        private ComputerEmployee IsAssigned(int id)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT c.Id,
-                                              ce.ComputerId,
-                                          FROM Computer c
-                                          JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
-                                         WHERE c.Id = @id
-                                      ";
+        //private ComputerEmployee IsAssigned(int id)
+        //{
+        //    using (SqlConnection conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (SqlCommand cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = @"SELECT c.Id,
+        //                                      ce.ComputerId,
+        //                                  FROM Computer c
+        //                                  JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+        //                                 WHERE c.Id = @id
+        //                              ";
 
-                    //Use the id as a parameter to get details about a specific computer.
-                    cmd.Parameters.Add(new SqlParameter("@id", id));
-                    SqlDataReader reader = cmd.ExecuteReader();
+        //            //Use the id as a parameter to get details about a specific computer.
+        //            cmd.Parameters.Add(new SqlParameter("@id", id));
+        //            SqlDataReader reader = cmd.ExecuteReader();
 
-                    ComputerEmployee computerEmployee = null;
-                    if (reader.Read())
-                    {
-                        computerEmployee = new ComputerEmployee
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("id")),
-                            ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId"))
-                        };
-                    }
-                    reader.Close();
-                    return computerEmployee;
-                }
-            }
-        }
+        //            ComputerEmployee computerEmployee = null;
+        //            if (reader.Read())
+        //            {
+        //                computerEmployee = new ComputerEmployee
+        //                {
+        //                    Id = reader.GetInt32(reader.GetOrdinal("id")),
+        //                    ComputerId = reader.GetInt32(reader.GetOrdinal("ComputerId"))
+        //                };
+        //            }
+        //            reader.Close();
+        //            return computerEmployee;
+        //        }
+        //    }
+        //}
     }
 }
