@@ -50,9 +50,14 @@ namespace BangazonWorkforce.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Make = reader.GetString(reader.GetOrdinal("Make")),
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"))
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate"))
                         };
+
+                        //Since DateTime is a non-nullable data type IsDBNull is required to query the DecomissionDate
+                        if(!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        {
+                            computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                        }
                         computers.Add(computer);
                     }
                     reader.Close();
@@ -64,6 +69,7 @@ namespace BangazonWorkforce.Controllers
         // GET: Computer/Details/5
         public ActionResult Details(int id)
         {
+            //See GetComputerByID code at the bottom
             Computer computer = GetComputerByID(id);
             return View(computer);
         }
@@ -77,13 +83,27 @@ namespace BangazonWorkforce.Controllers
         // POST: Computer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Computer computer)
         {
             try
             {
-                // TODO: Add insert logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"INSERT INTO Computer (Manufacturer, Make, PurchaseDate)
+                                            VALUES (@Manufacturer, @Make, @PurchaseDate)
+                                          ";
+                        cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
+                        cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
+                        cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
+                        cmd.ExecuteNonQuery();
 
-                return RedirectToAction(nameof(Index));
+                        return RedirectToAction(nameof(Index));
+
+                    }
+                }
             }
             catch
             {
@@ -137,6 +157,7 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        //Define GetComputerByID here so that it can be reused to keep the code DRY.
         private Computer GetComputerByID(int id)
         {
             using (SqlConnection conn = Connection)
@@ -152,6 +173,8 @@ namespace BangazonWorkforce.Controllers
                                           FROM Computer
                                          WHERE Id = @id
                                       ";
+
+                    //Use the id as a parameter to get details about a specific computer.
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
