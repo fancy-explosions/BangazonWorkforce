@@ -52,7 +52,8 @@ namespace BangazonWorkforce.Controllers
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                             PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate"))
                         };
-                        //IsDBNull is required to query null values from the SQL Database.
+
+                        //Since DateTime is a non-nullable data type IsDBNull is required to query the DecomissionDate
                         if(!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
                             computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
@@ -172,6 +173,7 @@ namespace BangazonWorkforce.Controllers
                                           FROM Computer
                                          WHERE Id = @id
                                       ";
+
                     //Use the id as a parameter to get details about a specific computer.
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
