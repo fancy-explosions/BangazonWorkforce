@@ -7,6 +7,8 @@ using BangazonWorkforce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using BangazonWorkforce.Models.ViewModels;
+
 
 namespace BangazonWorkforce.Controllers
 {
@@ -39,10 +41,10 @@ namespace BangazonWorkforce.Controllers
                                             d.Budget,
                                             COUNT(e.Id) as 'Employee Count'
                                             FROM Department d
-                                            JOIN Employee e on e.DepartmentId = d.Id
+                                            LEFT JOIN Employee e on e.DepartmentId = d.Id
                                         GROUP BY d.Id,
-                                            d.Name,
-                                            d.Budget";
+                                             d.Name,
+                                             d.Budget";
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -54,12 +56,6 @@ namespace BangazonWorkforce.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             Budget = reader.GetInt32(reader.GetOrdinal("Budget")),
-                            Employee = new Employee()
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("Employee Count")),
-                                //FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                                //LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            }
                         };
 
                         departments.Add(department);
@@ -81,23 +77,30 @@ namespace BangazonWorkforce.Controllers
         // GET: Department/Create
         public ActionResult Create()
         {
+
             return View();
         }
 
         // POST: Department/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(Department model)
         {
-            try
+            using (SqlConnection conn = Connection)
             {
-                // TODO: Add insert logic here
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Department
+                ( Name, Budget )
+                VALUES
+                ( @Name, @Budget )";
+                    cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
+                    cmd.Parameters.Add(new SqlParameter("@Budget", model.Budget));
+                    await cmd.ExecuteNonQueryAsync();
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                    return RedirectToAction(nameof(Index));
+                }
             }
         }
 
