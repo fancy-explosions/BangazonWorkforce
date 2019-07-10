@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using BangazonWorkforce.Models;
+using BangazonWorkforce.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,11 +27,10 @@ namespace BangazonWorkforce.Controllers
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-
         // GET: Employee
         public ActionResult Index()
         {
-            using (SqlConnection conn = Connection)
+            using(SqlConnection conn = Connection)
             {
                 //open the connection
                 conn.Open();
@@ -74,7 +74,6 @@ namespace BangazonWorkforce.Controllers
                     return View(employees);
                 }
             }
-
         }
 
         // GET: Employee/Details/5
@@ -86,13 +85,14 @@ namespace BangazonWorkforce.Controllers
         // GET: Employee/Create
         public ActionResult Create()
         {
-            return View();
+            EmployeeCreateViewModel employeeCreateViewModel = new EmployeeCreateViewModel(_config.GetConnectionString("DefaultConnection"));
+            return View(employeeCreateViewModel);
         }
 
         // POST: Employee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Employee employee)
         {
             try
             {
