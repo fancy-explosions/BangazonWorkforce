@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Author: Joel Mondesir
+// This controller defines the methods used for accessing the "Department" table in the BangazonWorkforce database
+
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
