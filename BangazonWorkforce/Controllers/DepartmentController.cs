@@ -39,7 +39,7 @@ namespace BangazonWorkforce.Controllers
                                         SELECT d.Id,
                                             d.Name,
                                             d.Budget,
-                                            COUNT(e.Id) as 'Employee Count'
+                                            COUNT(e.Id) as 'EmployeeCount'
                                             FROM Department d
                                             LEFT JOIN Employee e on e.DepartmentId = d.Id
                                         GROUP BY d.Id,
@@ -56,6 +56,7 @@ namespace BangazonWorkforce.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             Budget = reader.GetInt32(reader.GetOrdinal("Budget")),
+                            EmployeeCount = reader.GetInt32(reader.GetOrdinal("EmployeeCount")),
                         };
 
                         departments.Add(department);
