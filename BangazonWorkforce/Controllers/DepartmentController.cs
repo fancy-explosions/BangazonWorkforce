@@ -168,7 +168,7 @@ namespace BangazonWorkforce.Controllers
                     cmd.CommandText = @"
                                         SELECT d.Id,
                                             d.Name,
-                                            d.Budget,
+                                            d.Budget
                                         FROM Department d
                                         WHERE Id = @Id";
 
