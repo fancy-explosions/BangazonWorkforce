@@ -33,7 +33,7 @@ namespace BangazonWorkforce.Controllers
         // GET: Employee
         public ActionResult Index()
         {
-            using(SqlConnection conn = Connection)
+            using (SqlConnection conn = Connection)
             {
                 //open the connection
                 conn.Open();
@@ -82,7 +82,19 @@ namespace BangazonWorkforce.Controllers
         // GET: Employee/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            Employee emp = GetEmployeeById(id);
+
+            if (emp == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                EmployeeDetailViewModel EDM = new EmployeeDetailViewModel(id, _config.GetConnectionString("DefaultConnection"));
+                EDM.Employee = emp;
+                return View(EDM);
+            }
+
         }
 
         // GET: Employee/Create
@@ -117,7 +129,7 @@ namespace BangazonWorkforce.Controllers
 
                         return RedirectToAction(nameof(Index));
                     }
-                }                
+                }
             }
             catch
             {
@@ -168,6 +180,45 @@ namespace BangazonWorkforce.Controllers
             catch
             {
                 return View();
+            }
+        }
+        private Employee GetEmployeeById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT
+                                            Id,
+                                            FirstName,
+                                            LastName,
+                                            DepartmentId,
+                                            IsSuperVisor
+                                        FROM Employee
+                                        WHERE Id = @id;";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    Employee emp = null;
+
+                    if (reader.Read())
+                    {
+                        emp = new Employee
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("id")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            IsSuperVisor = reader.GetBoolean(reader.GetOrdinal("IsSuperVisor")),
+                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
+
+                        };
+                    }
+                    reader.Close();
+                    return emp;
+                }
+
             }
         }
     }
