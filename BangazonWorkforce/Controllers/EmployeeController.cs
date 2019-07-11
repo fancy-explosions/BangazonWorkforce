@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿// ===============================
+// AUTHOR: Sam Britt
+// CREATE DATE: 07-11-2019
+// PURPOSE: CRUD functionality for Employees
+// ===============================
+
+using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using BangazonWorkforce.Models;
 using BangazonWorkforce.Models.ViewModels;
@@ -134,19 +141,125 @@ namespace BangazonWorkforce.Controllers
         // GET: Employee/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+
+            EmployeeEditViewModel EmpEditViewModel = new EmployeeEditViewModel(_config.GetConnectionString("DefaultConnection"));
+
+            EmpEditViewModel.Employee = GetEmployeeById(id);
+
+            return View(EmpEditViewModel);
+        }
+
+        private List<Computer> GetComputers()
+        {
+            List<Computer> comps = new List<Computer>();
+
+            using (SqlConnection conn = Connection)
+            {
+                //Open connection
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT 
+                                               Id,
+                                               PurchaseDate,
+                                               DecomissionDate,
+                                               Make,
+                                               Manufacturer
+                                        FROM Computer;";
+
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Computer computer = new Computer
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate")),
+                            Make = reader.GetString(reader.GetOrdinal("Make")),
+                            Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                        };
+                        comps.Add(computer);
+
+                    }
+                    reader.Close();
+
+                    return comps;
+                }
+            }
+        }
+
+        private List<Department> GetDepartments()
+        {
+            List<Department> depts = new List<Department>();
+
+            using (SqlConnection conn = Connection)
+            {
+                //Open connection
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT 
+                                            Id,
+                                            Name,
+                                            Budget
+                                        FROM Department;";
+
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Department department = new Department
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            Budget = reader.GetInt32(reader.GetOrdinal("Budget"))
+                        };
+                        depts.Add(department);
+
+                    }
+                    reader.Close();
+
+                    return depts;
+                }
+            }
         }
 
         // POST: Employee/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, EmployeeEditViewModel viewModel)
         {
+            Employee emp = viewModel.Employee;
+
             try
             {
-                // TODO: Add update logic here
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE Employee
+                                        SET 
+                                            FirstName = @FirstName,
+                                            LastName = @LastName,
+                                            DepartmentId = @DepartmentId,
+                                            IsSuperVisor = @IsSuperVisor
+                                        WHERE Id = @id";
 
-                return RedirectToAction(nameof(Index));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+                        cmd.Parameters.Add(new SqlParameter("@FirstName", emp.FirstName));
+                        cmd.Parameters.Add(new SqlParameter("@LastName", emp.LastName));
+                        cmd.Parameters.Add(new SqlParameter("@DepartmentId", emp.DepartmentId));
+                        cmd.Parameters.Add(new SqlParameter("@IsSuperVisor", emp.IsSuperVisor));
+
+                        cmd.ExecuteNonQuery();
+                        return RedirectToAction(nameof(Index));
+
+                    }
+                }
             }
             catch
             {
