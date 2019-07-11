@@ -19,6 +19,6 @@ namespace BangazonWorkforce.Models
 
         [Required]
         public string Manufacturer { get; set; }
-        public bool IsAssigned { get; internal set; }
+        public bool IsAssigned { get; set; }
     }
 }
