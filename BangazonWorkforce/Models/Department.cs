@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Author: Joel Mondesir
+
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BangazonWorkforce.Models
