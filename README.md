@@ -33,10 +33,8 @@ These instructions will get you a copy of the project up and running, from scrat
 
 1. Open the BangazonWorkforce.sln file within Visual Studio
 1. Check to make sure that the `IIS Express` is changed to `BangazonWorkFroce` within the dropdown menu of the Run (play arrow) button on your top toolbar within Visual Studio.
-1. A browser should automatically run containing app. If a browser does not
-
-## Running manual tests
-1. 
+1. A browser should automatically run containing app. If a browser does not open, open a browser and got to `http://localhost:5000` 
+1. Once the app is up and running please navigate around the app and test all the features in the app. 
 
 ## Authors
 
