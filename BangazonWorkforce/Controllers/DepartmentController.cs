@@ -70,9 +70,17 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: Department/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int Id)
         {
-            return View();
+            try
+            {
+                Department Department = GetDepartmentById(Id);
+                return View(Department);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // GET: Department/Create
@@ -150,5 +158,44 @@ namespace BangazonWorkforce.Controllers
                 return View();
             }
         }
+        private Department GetDepartmentById(int Id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                        SELECT d.Id,
+                                            d.Name,
+                                            d.Budget,
+                                        FROM Department d
+                                        WHERE Id = @Id";
+
+                    cmd.Parameters.Add(new SqlParameter("@Id", Id));
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    Department Department = null;
+
+                    if (reader.Read())
+                    {
+                        Department = new Department
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            Budget = reader.GetInt32(reader.GetOrdinal("Budget")),
+                        };
+                        reader.Close();
+                        return Department;
+                    }
+                    else
+                    {
+                        reader.Close();
+                        return Department;
+                    }
+                }
+            }
+        }
+
     }
 }
