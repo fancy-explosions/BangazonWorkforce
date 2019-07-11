@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 //using System.Linq;
 //using System.Threading.Tasks;
 using BangazonWorkforce.Models;
+using BangazonWorkforce.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,31 +27,36 @@ namespace BangazonWorkforce.Controllers
             }
         }
         // GET: Computer
-        public ActionResult Index()
+        public ActionResult Index(int id, ComputerDeleteViewModel viewmodel)
         {
+            Computer computer = viewmodel.Computer;
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT Id, 
-                                               Make, 
-                                               Manufacturer, 
-                                               PurchaseDate, 
-                                               DecomissionDate 
-                                          FROM Computer
+                    cmd.CommandText = @"SELECT c.Id, 
+                                               c.Make, 
+                                               c.Manufacturer, 
+                                               c.PurchaseDate, 
+                                               c.DecomissionDate 
+                                          FROM Computer c
+                                     LEFT JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                         WHERE c.Id= @id
                                      ";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     List<Computer> computers = new List<Computer>();
                     while (reader.Read())
                     {
-                        Computer computer = new Computer
+                        computer = new Computer
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Make = reader.GetString(reader.GetOrdinal("Make")),
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate"))
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                            
                         };
 
                         //Since DateTime is a non-nullable data type IsDBNull is required to query the DecomissionDate
@@ -59,6 +65,11 @@ namespace BangazonWorkforce.Controllers
                             computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
                         }
                         computers.Add(computer);
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("ComputerId")))
+                        {
+                            viewmodel.IsAssigned = true;
+                        }
                     }
                     reader.Close();
                     return View(computers);
@@ -137,14 +148,13 @@ namespace BangazonWorkforce.Controllers
         // GET: Computer/Delete/5
         public ActionResult Delete(int id)
         {
-            Computer computer = GetComputerByID(id);
-            return View(computer);
+            return View();
         }
 
         // POST: Computer/Delete/5
-        [HttpPost]
+        [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteConfirmed(int id, ComputerDeleteViewModel viewmodel)
         {
             try
             {
@@ -153,7 +163,6 @@ namespace BangazonWorkforce.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        
                         cmd.CommandText = @"DELETE FROM Computer WHERE Id = @Id
                                           ";
 
