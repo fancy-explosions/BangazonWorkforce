@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// ===============================
+// AUTHOR: Sam Britt
+// CREATE DATE: 07-11-2019
+// PURPOSE: CRUD functionality for Employees
+// ===============================
+
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using BangazonWorkforce.Models;
 using BangazonWorkforce.Models.ViewModels;
