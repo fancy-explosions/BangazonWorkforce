@@ -56,7 +56,7 @@ namespace BangazonWorkforce.Controllers
                             Make = reader.GetString(reader.GetOrdinal("Make")),
                             Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                             PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            
+
                         };
 
                         //Since DateTime is a non-nullable data type IsDBNull is required to query the DecomissionDate
@@ -78,18 +78,55 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: Computer/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, ComputerDeleteViewModel viewmodel)
         {
-            //See GetComputerByID code at the bottom
-            Computer computer = GetComputerByID(id);
-            return View(computer);
+            Computer computer = viewmodel.Computer;
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT c.Id,
+                                               c.Make,
+                                               c.Manufacturer,
+                                               c.PurchaseDate,
+                                               c.DecomissionDate,
+                                               ce.ComputerId,
+                                               ce.AssignDate
+                                          FROM Computer c
+                                          JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                         WHERE c.Id = @id
+                                      ";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    computer = null;
+                    if (reader.Read())
+                    {
+                        computer = new Computer
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
+                            Make = reader.GetString(reader.GetOrdinal("Make")),
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                            IsAssigned = false
+                        };
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("ComputerId")))
+                        {
+                            computer.IsAssigned = true;
+                        }
+                    }
+                }
+                return View();
+            }
         }
 
-        // GET: Computer/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+            // GET: Computer/Create
+            //public ActionResult Create()
+            //{
+            //    return View();
+            //}
 
         // POST: Computer/Create
         [HttpPost]
@@ -152,7 +189,7 @@ namespace BangazonWorkforce.Controllers
         }
 
         // POST: Computer/Delete/5
-        [HttpPost,ActionName("Delete")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, ComputerDeleteViewModel viewmodel)
         {
@@ -251,7 +288,7 @@ namespace BangazonWorkforce.Controllers
         //                };
         //            }
         //            reader.Close();
-        //            return computerEmployee;
+                    //return computerEmployee;
         //        }
         //    }
         //}
