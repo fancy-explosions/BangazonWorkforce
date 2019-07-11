@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BangazonWorkforce.Models
 {
@@ -25,5 +27,10 @@ namespace BangazonWorkforce.Models
         //[Required]
         [Display(Name = "Department Name")]
         public Department department { get; set; }
+
+        public static implicit operator List<object>(Employee v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
